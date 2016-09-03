@@ -29,7 +29,7 @@ class PoliteAlex(object):
     def capture_still_image(self):
         # return "imgs/test1.jpg"
         t = time.strftime("%Y%m%d_%H%M%S")
-        path = "imgs/%s" % t
+        path = "imgs/%s.jpg" % t
         popen = subprocess.Popen(['raspstill','-w','200','-h','200','-o',path])
         ret = popen.communicate()
         return path
@@ -52,9 +52,9 @@ class PoliteAlex(object):
         return rst
 
     def is_master_in_picture(self, regn):
-        if len(rst['face']) > 0:
-            if len(rst['face'][0]['candidate']) > 0:
-                return rst['face'][0]['candidate'][0]['person_name'] == 'Sunset'
+        if len(regn['face']) > 0:
+            if len(regn['face'][0]['candidate']) > 0:
+                return regn['face'][0]['candidate'][0]['person_name'] == 'Sunset'
 
         return False
 
