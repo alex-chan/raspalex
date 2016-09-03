@@ -27,7 +27,7 @@ class PoliteAlex(object):
 
 
     def capture_still_image(self):
-        return "imgs/test1.jpg"
+        # return "imgs/test1.jpg"
         t = time.strftime("%Y%m%d_%H%M%S")
         path = "imgs/%s" % t
         popen = subprocess.Popen(['raspstill','-w','200','-h','200','-o',path])
@@ -52,7 +52,11 @@ class PoliteAlex(object):
         return rst
 
     def is_master_in_picture(self, regn):
-        return True
+        if len(rst['face']) > 0:
+            if len(rst['face'][0]['candidate']) > 0:
+                return rst['face'][0]['candidate'][0]['person_name']) == 'Sunset'
+
+        return False
 
     def is_only_one_stranger_in_picture(self, regn):
         return False
