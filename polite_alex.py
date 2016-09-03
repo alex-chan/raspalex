@@ -54,7 +54,7 @@ class PoliteAlex(object):
     def is_master_in_picture(self, regn):
         if len(rst['face']) > 0:
             if len(rst['face'][0]['candidate']) > 0:
-                return rst['face'][0]['candidate'][0]['person_name']) == 'Sunset'
+                return rst['face'][0]['candidate'][0]['person_name'] == 'Sunset'
 
         return False
 
