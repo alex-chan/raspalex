@@ -30,7 +30,7 @@ class PoliteAlex(object):
         # return "imgs/test1.jpg"
         t = time.strftime("%Y%m%d_%H%M%S")
         path = "imgs/%s.jpg" % t
-        popen = subprocess.Popen(['raspstill','-w','200','-h','200','-o',path])
+        popen = subprocess.Popen(['raspistill','-vf', '-w','200','-h','200','-o',path])
         ret = popen.communicate()
         return path
 
