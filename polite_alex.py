@@ -18,7 +18,9 @@ API_KEY = '2d0df4c56a364d82eed3d1a238950ffb'
 API_SECRET = 'QovGDvkrsfOjY_ncbvT7ItprS6Af7gZZ'
 api = API(API_KEY, API_SECRET)
 
-
+MASTER = 'Alex'
+FRIEND = 'Lizi'
+THREDHOLD = 30
 
 class PoliteAlex(object):
     last_path = None
@@ -27,7 +29,7 @@ class PoliteAlex(object):
 
 
     def capture_still_image(self):
-        # return "imgs/test1.jpg"
+        return "imgs/test1.jpg"
         t = time.strftime("%Y%m%d_%H%M%S")
         path = "imgs/%s.jpg" % t
         popen = subprocess.Popen(['raspistill','-vf', '-w','200','-h','200','-o',path])
@@ -43,7 +45,7 @@ class PoliteAlex(object):
     def recognize_with_facepp(self, path):
 
         # rst = api.recognition.identify(group_name = 'test', url = TARGET_IMAGE)
-        rst = api.recognition.identify(group_name = 'piface', img = File(path))
+        rst = api.recognition.identify(group_name = 'saladgroup', img = File(path))
         print('recognition result', rst)
         print('=' * 60)
         if len(rst['face']) > 0 and len(rst['face'][0]['candidate']) > 0:
@@ -51,21 +53,62 @@ class PoliteAlex(object):
                 rst['face'][0]['candidate'][0]['person_name'])
         return rst
 
-    def is_master_in_picture(self, regn):
+    def is_only_master_in_picture(self, regn):
+        if len(regn['face']) > 1 :
+            return False
+
         if len(regn['face']) > 0:
             if len(regn['face'][0]['candidate']) > 0:
-                return regn['face'][0]['candidate'][0]['person_name'] == 'Sunset'
+                return regn['face'][0]['candidate'][0]['person_name'] == MASTER
 
         return False
 
-    def is_only_one_stranger_in_picture(self, regn):
+    def is_friend(self, regn):
+        if len(regn['face']) < 1 :
+            return False
+
+        faces = regn['face']
+        for face in faces:
+            candicates = face['candidate']
+            if len(candicates) > 0 :
+                if (candicates[0]['person_name'] == FRIEND and candicates[0]['confidence'] > THREDHOLD):
+                    return True
+
         return False
 
-    def is_master_with_stranger(self, regn):
+    def is_only_stranger_in_picture(self, regn):
+        if len(regn['face']) < 1 :
+            return False
+
+        faces = reg['face']
+        for face in faces:
+            candicates = face['candidate']
+            if len(candicates) > 0 :
+                if not ( candicates[0]['person_name'] == MASTER or candicates[0]['person_name'] == FRIEND ):
+                    return True
+
         return False
 
-    def welcom_master_with_stranger(self):
+    def is_master_with_others(self, regn):
+        if len(regn['face']) <= 1 :
+            return False
+        faces = regn['face']
+        for face in faces:
+            candicates = face['candidate']
+            if len(candicates) > 0 :
+                if candicates[0]['person_name'] == MASTER and candicates[0]['confidence'] > 30:
+                    return True
+
+        return False
+
+    def welcome_master_with_others(self):
         pass
+
+    def welcome_friend(self):
+        pygame.mixer.music.load("res/welcome_friends.ogg")
+        pygame.mixer.music.play()
+        while pygame.mixer.music.get_busy() == True:
+            continue
 
     def welcome_master(self):
         pygame.mixer.music.load("res/welecomehome_master.ogg")
@@ -74,7 +117,11 @@ class PoliteAlex(object):
             continue
 
     def yield_at_stranger(self):
-        pass
+        pygame.mixer.music.load("res/yield_at_stranger.ogg")
+        pygame.mixer.music.play()
+        while pygame.mixer.music.get_busy() == True:
+            continue
+
 
     def run_forever(self):
         while True:
@@ -89,11 +136,13 @@ class PoliteAlex(object):
                 continue
 
             ret = self.recognize_with_facepp(path)
-            if self.is_master_with_stranger(ret):
-                self.welcom_master_with_stranger()
-            elif self.is_master_in_picture(ret):
+            if self.is_master_with_others(ret):
+                self.welcome_master_with_others()
+            elif self.is_friend(ret):
+                self.welcome_friend()
+            elif self.is_only_master_in_picture(ret):
                 self.welcome_master()
-            elif self.is_only_one_stranger_in_picture(ret):
+            elif self.is_only_stranger_in_picture(ret):
                 self.yield_at_stranger()
 
 
