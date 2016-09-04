@@ -29,7 +29,7 @@ class PoliteAlex(object):
 
 
     def capture_still_image(self):
-        return "imgs/test1.jpg"
+        # return "imgs/test1.jpg"
         t = time.strftime("%Y%m%d_%H%M%S")
         path = "imgs/%s.jpg" % t
         popen = subprocess.Popen(['raspistill','-vf', '-w','200','-h','200','-o',path])
@@ -80,7 +80,7 @@ class PoliteAlex(object):
         if len(regn['face']) < 1 :
             return False
 
-        faces = reg['face']
+        faces = regn['face']
         for face in faces:
             candicates = face['candidate']
             if len(candicates) > 0 :
