@@ -27,9 +27,11 @@ class PoliteAlex(object):
     def __init__(self):
         pygame.mixer.init()
 
+    def _is_someone(regn, person_name):
+        return regn['person_name'] == person_name and regn['confidence'] > THREDHOLD
 
     def capture_still_image(self):
-        # return "imgs/test1.jpg"
+        return "imgs/test1.jpg"
         t = time.strftime("%Y%m%d_%H%M%S")
         path = "imgs/%s.jpg" % t
         popen = subprocess.Popen(['raspistill','-vf', '-w','200','-h','200','-o',path])
@@ -59,7 +61,7 @@ class PoliteAlex(object):
 
         if len(regn['face']) > 0:
             if len(regn['face'][0]['candidate']) > 0:
-                return regn['face'][0]['candidate'][0]['person_name'] == MASTER
+                return self._is_someone(regn['face'][0]['candidate'], MASTER)
 
         return False
 
@@ -71,8 +73,7 @@ class PoliteAlex(object):
         for face in faces:
             candicates = face['candidate']
             if len(candicates) > 0 :
-                if (candicates[0]['person_name'] == FRIEND and candicates[0]['confidence'] > THREDHOLD):
-                    return True
+                return self._is_someone(candicates[0], FRIEND)
 
         return False
 
@@ -85,11 +86,10 @@ class PoliteAlex(object):
         for face in faces:
             candicates = face['candidate']
             if len(candicates) > 0 :
-                if  candicates[0]['person_name'] == MASTER or candicates[0]['person_name'] == FRIEND :
+                if self._is_someone(candicates[0], MASTER) or self._is_someone(candicates[0], FRIEND):
+                    print('is stranger')
                     is_stranger = False
                     break
-
-        print('Only strager in camera')
 
         return is_stranger
 
@@ -100,7 +100,7 @@ class PoliteAlex(object):
         for face in faces:
             candicates = face['candidate']
             if len(candicates) > 0 :
-                if candicates[0]['person_name'] == MASTER and candicates[0]['confidence'] > 30:
+                if self._is_someone(candidates[0], MASTER):
                     return True
 
         return False
