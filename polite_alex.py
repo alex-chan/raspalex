@@ -68,7 +68,7 @@ class PoliteAlex(object):
         pass
 
     def welcome_master(self):
-        pygame.mixer.music.load("res/welcomeback_master.mp3")
+        pygame.mixer.music.load("res/welecomehome_master.ogg")
         pygame.mixer.music.play()
         while pygame.mixer.music.get_busy() == True:
             continue
