@@ -81,13 +81,17 @@ class PoliteAlex(object):
             return False
 
         faces = regn['face']
+        is_stranger = True
         for face in faces:
             candicates = face['candidate']
             if len(candicates) > 0 :
-                if not ( candicates[0]['person_name'] == MASTER or candicates[0]['person_name'] == FRIEND ):
-                    return True
+                if  candicates[0]['person_name'] == MASTER or candicates[0]['person_name'] == FRIEND :
+                    is_stranger = False
+                    break
 
-        return False
+        print('Only strager in camera')
+
+        return is_stranger
 
     def is_master_with_others(self, regn):
         if len(regn['face']) <= 1 :
@@ -102,7 +106,10 @@ class PoliteAlex(object):
         return False
 
     def welcome_master_with_others(self):
-        pass
+        pygame.mixer.music.load("res/welcome_friends.ogg")
+        pygame.mixer.music.play()
+        while pygame.mixer.music.get_busy() == True:
+            continue
 
     def welcome_friend(self):
         pygame.mixer.music.load("res/welcome_friends.ogg")
